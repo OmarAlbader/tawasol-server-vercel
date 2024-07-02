@@ -4,9 +4,9 @@ const multer = require("multer");
 
 const auth = (req, res, next) => {
   // Get the token from the request header
-  console.log("in auth before token")
+  //console.log("in auth before token");
   const token = req.header("x-auth-token");
-  console.log("token:"+token)
+  //console.log("token:" + token);
 
   if (!token) {
     return res
@@ -21,8 +21,8 @@ const auth = (req, res, next) => {
           .status(401)
           .json({ msg: "Token is not valid, authorization denied." });
       } else {
-        console.log("inside else: ")
-        console.log("DECODED "+ JSON.stringify(decoded.user))
+        //console.log("inside else: ");
+        //console.log("DECODED " + JSON.stringify(decoded.user));
         req.user = decoded.user;
         next();
       }
@@ -38,10 +38,10 @@ const storage = multer.diskStorage({
     cb(null, "public/images");
   },
   filename: (req, file, cb) => {
-    cb(null, `${req.user.id}`)
-  }
+    cb(null, `${req.user.id}`);
+  },
 });
 
-const upload = multer({storage: storage}).single("file");
+const upload = multer({ storage: storage }).single("file");
 
 module.exports = { auth, upload };

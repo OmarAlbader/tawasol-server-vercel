@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const config = require("config");
 const db = config.get("mongoConnectionString");
 
+mongoose.set('strictQuery', false);
+
  const connectDB = async () => {
     try {
         await mongoose.connect(db);

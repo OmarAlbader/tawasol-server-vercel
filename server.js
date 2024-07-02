@@ -12,12 +12,13 @@ app.use("/api/posts", require("./routes/posts.js"));
 
 connectDB();
 
-app.use(express.static(__dirname + '/public'))
+// To allow clients to access public folder
+app.use(express.static(__dirname + "/public"));
 
 app.get("/", (req, res) => res.send("Server is working correctly"));
 
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
-    console.log(`Server has started on port ${PORT}`);
-})
+  console.log(`Server has started on port ${PORT}`);
+});

@@ -3,6 +3,7 @@ const { auth, upload } = require("../utils/index.js");
 const router = express.Router();
 const { check, validationResult } = require("express-validator");
 const normalizeUrl = require("normalize-url");
+const moment = require("moment");
 const Profile = require("../models/Profile.js");
 const User = require("../models/User.js");
 const Post = require("../models/Post.js");
@@ -59,7 +60,6 @@ router.post(
     const test = Array.isArray(skills)
       ? skills
       : skills.split(",").map((skill) => skill.trim());
-    console.log("TEST", test);
     const profile = {
       user: req.user.id,
       website:
@@ -107,7 +107,7 @@ router.get("/me", auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({
       user: req.user.id,
-    }).populate("user", ["name"]);
+    }).populate("user", ["name"]); // Populate the user field with the name field from the User collection
 
     if (!profile) {
       return res.status(400).json({ msg: "There is no profile for this user" });
@@ -154,7 +154,7 @@ router.delete("/", auth, async (req, res) => {
 
   try {
     await Promise.all([
-      Post.deleteMany({user: req.user.id}),
+      Post.deleteMany({ user: req.user.id }),
       Profile.findOneAndRemove({ user: req.user.id }),
       User.findOneAndRemove({ _id: req.user.id }),
     ]);
@@ -168,10 +168,10 @@ router.delete("/", auth, async (req, res) => {
 
 router.post("/upload", auth, async (req, res) => {
   try {
-    console.log("inside upload")
+    console.log("inside upload");
     upload(req, res, async (err) => {
       if (err) {
-        console.log("Error:"+ err)
+        console.log("Error:" + err);
         res.status(500).send(`Server Error: ${err}`);
       } else {
         try {
@@ -192,11 +192,27 @@ router.put(
   auth,
   check("title", "Title is required").notEmpty(),
   check("company", "Company is required").notEmpty(),
-  check("from", "From date is required and needs to be from the past")
+  check("from", "From date is required")
     .notEmpty()
     .custom((value, { req }) => {
-      return req.body.to ? value < req.body.to : true;
-    }),
+      if (req.body.current) {
+        req.body.to = moment(new Date()).format("YYYY-MM-DD");
+        return value <= req.body.to;
+      }
+
+      return true;
+    })
+    .withMessage("(From) date must be before (current) date"),
+  check("to", "To date is required")
+    .notEmpty()
+    .custom((value, { req }) => {
+      if (!req.body.current && req.body.to) {
+        return req.body.from <= value;
+      }
+
+      return true;
+    })
+    .withMessage("(From) date must be before (To) date"),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -220,13 +236,12 @@ router.delete("/experience/:exp_id", auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user.id });
 
-    profile.experience = profile.experience.filter(exp => {
+    profile.experience = profile.experience.filter((exp) => {
       return exp._id.toString() !== req.params.exp_id;
     });
-    
+
     await profile.save();
     return res.json(profile);
-
   } catch (err) {
     console.error(err.message);
     return res.status(500).send(err.message);
@@ -239,11 +254,26 @@ router.put(
   check("school", "School is required").notEmpty(),
   check("degree", "Degree is required").notEmpty(),
   check("fieldofstudy", "Field of study is required").notEmpty(),
-  check("from", "From date is required and needs to be from the past")
+  check("from", "From date is required")
     .notEmpty()
     .custom((value, { req }) => {
-      return req.body.to ? value < req.body.to : true;
-    }),
+      if (req.body.current) {
+        req.body.to = moment(new Date()).format("YYYY-MM-DD");
+        return value <= req.body.to;
+      }
+      return true;
+    })
+    .withMessage("(From) date must be before (current) date"),
+  check("to", "To date is required")
+    .notEmpty()
+    .custom((value, { req }) => {
+      if (!req.body.current && req.body.to) {
+        return req.body.from <= value;
+      }
+
+      return true;
+    })
+    .withMessage("(From) date must be before (To) date"),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -267,13 +297,12 @@ router.delete("/education/:edu_id", auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user.id });
 
-    profile.education = profile.education.filter(edu => {
+    profile.education = profile.education.filter((edu) => {
       return edu._id.toString() !== req.params.edu_id;
     });
-    
+
     await profile.save();
     return res.json(profile);
-
   } catch (err) {
     console.error(err.message);
     return res.status(500).send(err.message);

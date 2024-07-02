@@ -1,4 +1,4 @@
 {
-    "mongoConnectionString": "mongodb+srv://admin:admin123@cluster0.suzg8.mongodb.net/Tawasol?retryWrites=true&w=majority",
+    "mongoConnectionString": "mongodb+srv://admin:admin@cluster0.leua5it.mongodb.net/Tawasol?retryWrites=true&w=majority&appName=Cluster0",
     "jwtSecret": "jwtSecretToken"
 }
