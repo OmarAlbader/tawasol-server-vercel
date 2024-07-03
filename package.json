@@ -24,6 +24,7 @@
     "normalize-url": "^6.0.0"
   },
   "devDependencies": {
+    "@flydotio/node-demo": "^0.2.1",
     "concurrently": "^7.0.0",
     "nodemon": "^2.0.15"
   }
