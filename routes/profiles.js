@@ -57,7 +57,7 @@ router.post(
       ...rest
     } = req.body;
 
-    const test = Array.isArray(skills)
+    Array.isArray(skills)
       ? skills
       : skills.split(",").map((skill) => skill.trim());
     const profile = {
@@ -151,7 +151,6 @@ router.get("/user/:user_id", auth, async (req, res) => {
 
 router.delete("/", auth, async (req, res) => {
   // Remove posts, profile, user
-
   try {
     await Promise.all([
       Post.deleteMany({ user: req.user.id }),
