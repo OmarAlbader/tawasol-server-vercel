@@ -2,14 +2,17 @@
   "name": "server",
   "version": "1.0.0",
   "description": "Tawasol Application",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "server": "nodemon server.js",
+    "start": "node index.js",
+    "server": "nodemon index.js",
     "client": "npm start --prefix ../client",
-    "dev": "concurrently \"npm:server\" \"npm:client\""
+    "dev": "concurrently \"npm:index\" \"npm:client\""
   },
-  "author": "Tariq Elouzeh",
+  "author": "Omar Albader",
+  "engines": {
+    "node": "20.14.0"
+  },
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
