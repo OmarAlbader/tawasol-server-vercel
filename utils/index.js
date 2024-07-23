@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = require("config");
 const multer = require("multer");
+const path = require("path");
 
 const auth = (req, res, next) => {
   // Get the token from the request header
@@ -38,7 +39,10 @@ const storage = multer.diskStorage({
     cb(null, "public/images");
   },
   filename: (req, file, cb) => {
-    cb(null, `${req.user.id}`);
+    cb(
+      null,
+      file.fieldname + "_" + Date.now() + path.extname(file.originalname)
+    );
   },
 });
 

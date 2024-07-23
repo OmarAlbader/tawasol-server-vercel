@@ -1,7 +1,7 @@
 const express = require("express");
 const { auth } = require("../utils/index.js");
-const router = express.Router();
 const { check, validationResult } = require("express-validator");
+const router = express.Router();
 const User = require("../models/User.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -143,14 +143,14 @@ Path: GET /api/users
 Desc: Takes a token and returns user information
 Private
 */
-router.get("/", auth ,async (req, res) => {
-    try {
-        const user = await User.findById(req.user.id).select("-password");
-        res.json(user);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send(err.message);
-    }
-})
+router.get("/", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    res.json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send(err.message);
+  }
+});
 
 module.exports = router;
