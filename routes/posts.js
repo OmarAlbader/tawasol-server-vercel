@@ -62,6 +62,10 @@ router.get("/:id", auth, async (req, res) => {
       return res.status(404).json({ msg: "Post not found" });
     }
 
+    if (post.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: "User is not authorized" });
+    }
+
     res.json(post);
   } catch (err) {
     console.error(err.message);
@@ -254,13 +258,14 @@ router.patch(
 
     try {
       const post = await Post.findById(req.params.postId);
+      if (!post) {
+        return res.status(404).json({ msg: "Post not found" });
+      }
+
       const comment = post.comments.find((comment) => {
         return comment.id === req.params.commentId;
       });
 
-      if (!post) {
-        return res.status(404).json({ msg: "Post not found" });
-      }
       if (!comment) {
         return res.status(404).json({ msg: "Comment not found" });
       }
@@ -320,7 +325,10 @@ router.patch("/remove_comment_like/:id/:comment_id", auth, async (req, res) => {
       return comment.id === req.params.comment_id;
     });
 
-    if (!comment.likes.some((like) => like.user.toString() === req.user.id)) {
+    const userLikedComment = comment.likes.find(
+      (like) => like.user.toString() === req.user.id
+    );
+    if (!userLikedComment) {
       return res
         .status(400)
         .json({ msg: "User has not liked the comment previously!" });
@@ -330,11 +338,6 @@ router.patch("/remove_comment_like/:id/:comment_id", auth, async (req, res) => {
       (like) => like.user.toString() !== req.user.id
     );
 
-    await Post.findByIdAndUpdate(
-      req.params.id,
-      { $set: { comments: post.comments } },
-      { new: true }
-    );
     await post.save();
 
     return res.json(comment.likes);

@@ -57,15 +57,13 @@ router.post(
       ...rest
     } = req.body;
 
-    Array.isArray(skills)
+    const parsedSkills = Array.isArray(skills)
       ? skills
       : skills.split(",").map((skill) => skill.trim());
+    console.log(parsedSkills);
     const profile = {
       user: req.user.id,
-      website:
-        website && website !== ""
-          ? normalizeUrl(website, { forceHttps: true })
-          : "",
+      website: website ? normalizeUrl(website, { forceHttps: true }) : "",
       skills: Array.isArray(skills)
         ? skills
         : skills.split(",").map((skill) => skill.trim()),
