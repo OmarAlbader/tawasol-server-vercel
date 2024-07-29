@@ -338,14 +338,11 @@ router.patch("/remove_comment_like/:id/:comment_id", auth, async (req, res) => {
       (like) => like.user.toString() !== req.user.id
     );
 
-<<<<<<< HEAD
     await Post.findByIdAndUpdate(
       req.params.id,
       { $set: { comments: post.comments } },
       { new: true }
     );
-=======
->>>>>>> parent of 0809131 (removed like and dislike for comments commit)
     await post.save();
 
     return res.json(comment.likes);
