@@ -291,6 +291,137 @@ router.patch(
   }
 );
 
+router.patch("/comment_like/:id/:comment_id", auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    const comment = post.comments.find((comment) => {
+      return comment.id === req.params.comment_id;
+    });
+
+    if (comment.likes.some((like) => like.user.toString() === req.user.id)) {
+      return res.status(400).json({ msg: "Comment already liked" });
+    }
+
+    comment.likes.unshift({ user: req.user.id });
+
+    await Post.findByIdAndUpdate(
+      req.params.id,
+      { $set: { comments: post.comments } },
+      { new: true }
+    );
+    // await post.save();
+
+    return res.json(comment.likes);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error " + err.message);
+  }
+});
+
+router.patch("/remove_comment_like/:id/:comment_id", auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    const comment = post.comments.find((comment) => {
+      return comment.id === req.params.comment_id;
+    });
+
+    const userLikedComment = comment.likes.find(
+      (like) => like.user.toString() === req.user.id
+    );
+    if (!userLikedComment) {
+      return res
+        .status(400)
+        .json({ msg: "User has not liked the comment previously!" });
+    }
+
+    comment.likes = comment.likes.filter(
+      (like) => like.user.toString() !== req.user.id
+    );
+
+    await Post.findByIdAndUpdate(
+      req.params.id,
+      { $set: { comments: post.comments } },
+      { new: true }
+    );
+    await post.save();
+
+    return res.json(comment.likes);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error " + err.message);
+  }
+});
+
+router.patch("/comment_dislike/:id/:comment_id", auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    const comment = post.comments.find((comment) => {
+      return comment.id === req.params.comment_id;
+    });
+
+    if (
+      comment.dislikes.some(
+        (dislike) => dislike.user.toString() === req.user.id
+      )
+    ) {
+      return res.status(400).json({ msg: "Comment already disliked" });
+    }
+
+    comment.dislikes.unshift({ user: req.user.id });
+
+    await Post.findByIdAndUpdate(
+      req.params.id,
+      { $set: { comments: post.comments } },
+      { new: true }
+    );
+    // await post.save();
+
+    return res.json(comment.dislikes);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error " + err.message);
+  }
+});
+
+router.patch(
+  "/remove_comment_dislike/:id/:comment_id",
+  auth,
+  async (req, res) => {
+    try {
+      const post = await Post.findById(req.params.id);
+      const comment = post.comments.find((comment) => {
+        return comment.id === req.params.comment_id;
+      });
+
+      if (
+        !comment.dislikes.some(
+          (dislike) => dislike.user.toString() === req.user.id
+        )
+      ) {
+        return res
+          .status(400)
+          .json({ msg: "User has not disliked the comment previously!" });
+      }
+
+      comment.dislikes = comment.dislikes.filter(
+        (dislike) => dislike.user.toString() !== req.user.id
+      );
+
+      await Post.findByIdAndUpdate(
+        req.params.id,
+        { $set: { comments: post.comments } },
+        { new: true }
+      );
+      await post.save();
+
+      return res.json(comment.dislikes);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server Error " + err.message);
+    }
+  }
+);
+
 router.delete("/comment/:id/:comment_id", auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
