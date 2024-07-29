@@ -10,6 +10,9 @@
     "dev": "concurrently \"npm:server\" \"npm:client\""
   },
   "author": "Omar Albader",
+  "engines": {
+    "node": "20.14.0"
+  },
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
