@@ -1,18 +1,15 @@
 {
-  "name": "index",
+  "name": "server",
   "version": "1.0.0",
   "description": "Tawasol Application",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js",
-    "server": "nodemon index.js",
+    "start": "node server.js",
+    "server": "nodemon server.js",
     "client": "npm start --prefix ../client",
     "dev": "concurrently \"npm:server\" \"npm:client\""
   },
   "author": "Omar Albader",
-  "engines": {
-    "node": "20.14.0"
-  },
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
